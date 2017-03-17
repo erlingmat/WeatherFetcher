@@ -1,6 +1,7 @@
 import logging
 import yaml
-import urllib
+import urllib2
+from urllib import urlencode
 import os.path
 
 logger = logging.getLogger(__name__)
@@ -17,13 +18,18 @@ class Process:
 		    data_loaded = yaml.load(stream)
         logger.info('urltoload=' + data_loaded.get('service').get('api_url'))
 		
-        urltoread = data_loaded.get('service').get('api_url')
+        apitoread = data_loaded.get('service').get('api_url')
         countryinfo = data_loaded.get('configuration').get(self._project_config)
         logger.info('countryinfo=' + data_loaded.get('configuration'))
+
         for city in countryinfo.get('cities'):
         	logger.info('cityname=' + city)
         	filename = city + '.csv'
         	if os.path.exists(filename):
-        		weather_data = urllib.urlopen(urltoread + "?q=" + city).read()
+                logger.info('Calling API')
+                _parameters = 'q=' + city + '&key=92f88c62ac9c497dac1221747171703'
+                urltoread = apitoread + "?" + urlencode(_parameters);
+        		weather_data = urllib2.urlopen(urltoread  ).read()
+
         		f = open(filename, 'w')
         		f.write(weather_data)
